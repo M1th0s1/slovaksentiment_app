@@ -1,0 +1,1 @@
+# slovaksentiment_app
