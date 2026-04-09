@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 # ==========================================
-# LEXIKÓN — 7 ASPEKTOV
+# LEXIKÓN
 # ==========================================
 ASPEKTOVE_SADY = {
 
@@ -113,8 +113,6 @@ ASPEKTOVE_SADY = {
     ],
 
     # Správanie, ochota, odbornosť zamestnancov
-    # Pozn: sentiment adjektíva (milý, arogantný...) sú tu zámerne —
-    # bez nich by sme nenašli "predavačka bola milá" kde nie je iné aspektové slovo
     'Personál': [
         'personál',
         'zamestnanec', 'zamestnanc',
@@ -250,7 +248,7 @@ CONJUNCTIONS_PATTERN = (
     r'naopak|aspoň|aj keď|aj napriek)\b'
 )
 
-# Fuzzy prahy — kratšie slová potrebujú vyšší prah
+# Fuzzy prahy
 FUZZY_THRESHOLD_DEFAULT = 82
 FUZZY_THRESHOLD_SHORT   = 90   # pre slová kratšie ako 6 znakov
 
@@ -305,7 +303,7 @@ def clean_text(text):
 
 
 # ==========================================
-# SPRACOVANIE VÝSLEDKOV — SlovakBERT kinit
+# SPRACOVANIE VÝSLEDKOV 
 # ==========================================
 def process_sentiment_results(results):
     """
@@ -417,7 +415,7 @@ def extract_aspects_ultimate(text, model):
 
 
 # ==========================================
-# TABUĽKY — MANAŽÉRSKY SÚHRN
+# TABUĽKY
 # ==========================================
 def draw_summary_tables(df_overall, df_aspects):
     st.markdown("## Manažérsky Súhrn")
@@ -797,7 +795,7 @@ def run_laboratory_module(sentiment_model):
 
 
 # ==========================================
-# MODUL 3: DATA WAREHOUSE
+# MODUL 3: DATABAZA
 # ==========================================
 def run_data_warehouse_module(db_path):
     st.title("🗄️Databáza")
