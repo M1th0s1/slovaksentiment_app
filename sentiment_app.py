@@ -277,7 +277,7 @@ def load_nlp_tools():
 
 
 def lemmatize_text(text):
-    words = word_tokenize(text, language='slovene')
+    words = word_tokenize(text)
     lemmatized = [simplemma.lemmatize(w, lang='sk') for w in words]
     return " ".join(lemmatized).lower()
 
