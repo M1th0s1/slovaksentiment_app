@@ -8,7 +8,6 @@ import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 import simplemma
 from unidecode import unidecode
-from thefuzz import fuzz
 import sqlite3
 from datetime import datetime
 from streamlit_option_menu import option_menu
@@ -248,9 +247,7 @@ CONJUNCTIONS_PATTERN = (
     r'naopak|aspoň|aj keď|aj napriek)\b'
 )
 
-# Fuzzy prahy
-FUZZY_THRESHOLD_DEFAULT = 82
-FUZZY_THRESHOLD_SHORT   = 90   # pre slová kratšie ako 6 znakov
+
 
 
 # ==========================================
@@ -286,12 +283,6 @@ def lemmatize_text(text):
 
 
 def clean_text(text):
-    """
-    Vyčistí text pred sentiment analýzou:
-    - Odstráni emojis a Unicode symboly ktoré model nevie spracovať
-    - Odstráni nadbytočné medzery
-    Pôvodný text ostáva nezmenený pre zobrazenie v UI.
-    """
     # Odstráni všetky znaky mimo základnej latinky, diakritiky a bežnej interpunkcie
     cleaned = re.sub(
         r'[^\w\s\.,!?;:\-\(\)\'\"áäčďéíĺľňóôŕšťúýžÁÄČĎÉÍĹĽŇÓÔŔŠŤÚÝŽ]',
@@ -303,7 +294,7 @@ def clean_text(text):
 
 
 # ==========================================
-# SPRACOVANIE VÝSLEDKOV 
+# SPRACOVANIE VÝSLEDKOV — SlovakBERT 
 # ==========================================
 def process_sentiment_results(results):
     """
@@ -360,7 +351,6 @@ def extract_aspects_ultimate(text, model):
 
             lemmatized_clause  = lemmatize_text(clause)
             clause_normalized  = unidecode(lemmatized_clause)
-            clause_words       = clause_normalized.split()
 
             # Deduplikácia aspektov na úrovni klauzuly
             found_in_clause = set()
@@ -369,53 +359,40 @@ def extract_aspects_ultimate(text, model):
                 if aspect_name in found_in_clause:
                     continue
 
-                aspect_found     = False
+                aspect_found      = False
                 matched_word_info = ""
 
                 for keyword in keywords:
-                    keyword_norm = unidecode(keyword)
+                    keyword_norm = unidecode(keyword).lower()
 
-                    # 1. Presná zhoda (substring)
-                    if keyword_norm in clause_normalized:
+                 
+                    pattern = r'\b' + re.escape(keyword_norm) + r'\b'
+                    if re.search(pattern, clause_normalized):
                         aspect_found      = True
                         matched_word_info = f"Presná zhoda: '{keyword_norm}'"
                         break
 
-                    # 2. Fuzzy matching — prah závisí od dĺžky kľúčového slova
-                    threshold = FUZZY_THRESHOLD_SHORT if len(keyword_norm) < 6 else FUZZY_THRESHOLD_DEFAULT
-                    for word in clause_words:
-                        if fuzz.ratio(keyword_norm, word) >= threshold:
-                            aspect_found      = True
-                            matched_word_info = (
-                                f"Fuzzy zhoda ({fuzz.ratio(keyword_norm, word)}%): "
-                                f"'{word}' ≈ '{keyword_norm}'"
-                            )
-                            break
-                    if aspect_found:
-                        break
-
                 if aspect_found:
                     found_in_clause.add(aspect_name)
-                    raw_result    = model(clause)[0]
+                    raw_result     = model(clause)[0]
                     sentiment_data = process_sentiment_results(raw_result)
 
                     debug_info.append({
-                        "Časť vety":       clause,
-                        "Nájdené cez":     matched_word_info,
+                        "Časť vety":        clause,
+                        "Nájdené cez":      matched_word_info,
                         "Priradený aspekt": aspect_name,
                     })
                     found_aspects.append({
-                        "Aspekt":      aspect_name,
-                        "Časť vety":   clause,
+                        "Aspekt":       aspect_name,
+                        "Časť vety":    clause,
                         "Zistený stav": sentiment_data['label'],
-                        "Polarita":    sentiment_data['polarity'],
+                        "Polarita":     sentiment_data['polarity'],
                     })
 
     return found_aspects, debug_info
 
-
 # ==========================================
-# TABUĽKY
+# TABUĽKY — MANAŽÉRSKY SÚHRN
 # ==========================================
 def draw_summary_tables(df_overall, df_aspects):
     st.markdown("## Manažérsky Súhrn")
@@ -762,7 +739,7 @@ def run_laboratory_module(sentiment_model):
 
         # 2. ASPEKTY
         st.subheader("Detailný rozbor nájdených aspektov")
-        with st.spinner("Hľadám aspekty cez Fuzzy Matching..."):
+        with st.spinner("Hľadám aspekty..."):
             extracted_aspects, debug_info = extract_aspects_ultimate(user_text, sentiment_model)
 
         if not extracted_aspects:
@@ -795,7 +772,7 @@ def run_laboratory_module(sentiment_model):
 
 
 # ==========================================
-# MODUL 3: DATABAZA
+# MODUL 3: DATA WAREHOUSE
 # ==========================================
 def run_data_warehouse_module(db_path):
     st.title("🗄️Databáza")
