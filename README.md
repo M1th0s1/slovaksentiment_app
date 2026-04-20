@@ -7,9 +7,11 @@ Systém automaticky klasifikuje zákaznícke hodnotenia do troch kategórií —
 
 **Funkcie**
 
-📊 Analýza pobočiek — porovnanie sentimentu naprieč pobočkami, KPI karty, grafy, sumarizačné tabuľky
-🔬 Detailná analýza — manuálne zadanie ľubovoľného textu a zobrazenie klasifikácie s aspektmi
-🗄️ Databáza — prehľad uložených dát, export CSV, import nových hodnotení
+**📊 Porovnanie poboči**ek — porovnanie sentimentu naprieč pobočkami, KPI karty, grafy, sumarizačné tabuľky
+
+**🔬 Detailná analýza **— manuálne zadanie ľubovoľného textu a zobrazenie klasifikácie s aspektmi
+
+**🗄️ Databáza **— prehľad uložených dát, export CSV, import nových hodnotení
 
 **Inštalácia**
 Požiadavky: Python 3.x, terminál
