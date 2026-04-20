@@ -20,12 +20,12 @@ Systém automaticky klasifikuje zákaznícke hodnotenia do troch kategórií —
 **Inštalácia**
 Požiadavky: Python 3.x, terminál
 
-# 1. Stiahni repozitár (Code → Download ZIP) a rozbali
+# 1. Stiahnutie  repozitára (Code → Download ZIP) a rozbali
 
-# 2. Inštaluj závislosti
+# 2. Inštalácia závislosti
 pip install -r requirements.txt
 
-# 3. Importuj hodnotenia (xlsx so stĺpcami: review_id, pobocka, text, hviezdy, date)
+# 3. Impor hodnotení (xlsx so stĺpcami: review_id, pobocka, text, hviezdy, date)
 V module Databáza
 
 # 4. Spusti aplikáciu
@@ -37,5 +37,5 @@ streamlit run sentiment_app.py
 **Transformers** — SlovakBERT model
 **Plotly** — vizualizácie
 **SQLite** — databáza
-**simplemma **— lematizácia
+**simplemma**— lematizácia
 
